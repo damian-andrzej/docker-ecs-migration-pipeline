@@ -181,3 +181,7 @@ Amazon Elastic Container Service (ECS) provides multiple deployment options base
 
 ---
 
+## 🎯 Considering all options choice would be ECS on EC2
+
+For lab purpose its the most flexible option but other hand you learn a lot about deployment stategies, so lets proceed with cluster creation :)
+
