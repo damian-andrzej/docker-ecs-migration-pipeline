@@ -9,6 +9,7 @@ This guide will walk you through the process of migrating your local app to **Am
 - **AWS CLI** installed and configured on your machine.
   - If not installed, follow [this link](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) for installation instructions.
   - Ensure you have valid AWS credentials by running `aws configure`.
+  - Install eksctl  [this link](https://eksctl.io/installation/) for installation instructions.
   
 - **Docker** installed on your machine.
   - If not installed, follow [this link](https://docs.docker.com/get-docker/) for installation instructions.
