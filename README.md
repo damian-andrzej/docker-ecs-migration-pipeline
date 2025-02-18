@@ -85,7 +85,7 @@ jobs:
           ecs-cli configure --region us-east-1 --access-key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret-key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           ecs-cli compose --file docker-compose.yml service up
 ```
-## Step 2: Create an Amazon ECS Cluster
+## Step 2: Choice your ECS variant
 
 # 🚀 Amazon ECS Deployment Options
 
@@ -186,3 +186,39 @@ Amazon Elastic Container Service (ECS) provides multiple deployment options base
 
 For lab purpose its the most flexible option but other hand you learn a lot about deployment stategies, so lets proceed with cluster creation :)
 
+## Step 3: Create an Amazon ECS Cluster
+
+There are some AWS requirements for VPC, Subnets and Security groups. To avoid duplication i will forward you to official article [this link](https://docs.aws.amazon.com/eks/latest/userguide/network-reqs.html)
+
+SHORT DESCRIPTION OF OUR CONFIG - VPC SG etc PLUS GRAFIKA 
+
+Powershell
+```
+aws eks create-cluster --region us-east-1 --name clusterdamiana `
+    --kubernetes-version 1.32 `
+    --role-arn arn:aws:iam::992382459406:role/AmazonEKSAutoClusterRole `
+    --resources-vpc-config subnetIds=subnet-094119997fd2df175,subnet-0b8be373a77fbaad5,securityGroupIds=sg-00a3c3b55bfc737a1
+```
+
+Linux/Mac
+```
+aws eks create-cluster --region us-east-1 --name clusterdamiana \
+    --kubernetes-version 1.32 \
+    --role-arn arn:aws:iam::992382459406:role/AmazonEKSAutoClusterRole \
+    --resources-vpc-config subnetIds=subnet-094119997fd2df175,subnet-0b8be373a77fbaad5 \
+    --security-group-ids sg-00a3c3b55bfc737a1
+```
+
+## Step 4: Create NodeGroup
+
+```
+aws eks create-nodegroup --cluster-name my-eks-cluster \
+    --nodegroup-name my-nodegroup \
+    --subnets subnet-094119997fd2df175 subnet-0b8be373a77fbaad5 \
+    --node-role arn:aws:iam::992382459406:role/AmazonEKSWorkerNodeRole \
+    --scaling-config minSize=1,maxSize=3,desiredSize=2 \
+    --instance-types t3.medium \
+    --ami-type AL2_x86_64 \
+    --disk-size 20 \
+    --remote-access ec2SshKey=my-key-pair
+```
