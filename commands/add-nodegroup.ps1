@@ -1,0 +1,11 @@
+aws eks create-nodegroup `
+    --region us-east-1 `
+    --cluster-name clusterdamiana `
+    --nodegroup-name my-nodegroup `
+    --subnets "subnet-094119997fd2df175" "subnet-0b8be373a77fbaad5" `
+    --node-role "arn:aws:iam::992382459406:role/AmazonEKSAutoClusterRole" `
+    --scaling-config "minSize=1,maxSize=3,desiredSize=2" `
+    --instance-types "t3.medium" `
+    --ami-type "AL2_x86_64" `
+    --disk-size 20 `
+    --remote-access "ec2SshKey=terraform-key"
