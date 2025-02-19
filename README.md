@@ -192,14 +192,47 @@ There are some AWS requirements for VPC, Subnets and Security groups. To avoid d
 
 In few words : we need subnets with at least 8 IP adresses, rules that enable specific  application traffic to communicate outside the world( if required).
 All popular setups described in link above.
-Here is the VPC config we will provision
+Here is the VPC & Route table config we will provision
 
 ![Alt text](images/VPC.png)
 
-Route table 
 ![Alt text](images/rtable.png)
 
-SHORT DESCRIPTION OF OUR CONFIG - VPC SG etc PLUS GRAFIKA 
+
+### Until we start lets prepare a bit. To deploy a cluster and nodes we must have appropriate permissions & groups
+
+AmazonEKSAutoClusterRole - this Role must have this permissions:
+
+- AmazonEKSClusterPolicy
+- AmazonEKSServicePolicy
+- AmazonEC2ContainerRegistryReadOnly
+- AmazonEC2FullAccess
+- IAMFullAccess
+- AWSCloudFormationFullAccess
+- AmazonVPCFullAccess
+
+### Trust relationship
+
+This feature decides in AWS which entities (users, roles, services, or accounts) can assume an IAM role. It is a JSON policy attached to an IAM role that grants permissions to other AWS entities to use that role.
+Here is what we need for *AmazonEKSAutoClusterRole*
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": [
+                    "eks.amazonaws.com",
+                    "ec2.amazonaws.com"
+                ],
+                "AWS": "arn:aws:iam::992382459406:user/YOUR_AWS_USER"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+```
 
 Powershell
 ```
@@ -220,6 +253,9 @@ aws eks create-cluster --region us-east-1 --name clusterdamiana \
 
 ## Step 4: Create NodeGroup
 
+
+Cluster is ready, now we need compute resources that going to host our applications. Lets provision a nodegroup that takes this responsibilities.
+In this step we provide nodegroup name, subnet, scaling strategy, instance type, disk size and keys.
 ```
 aws eks create-nodegroup --cluster-name my-eks-cluster \
     --nodegroup-name my-nodegroup \
@@ -231,3 +267,23 @@ aws eks create-nodegroup --cluster-name my-eks-cluster \
     --disk-size 20 \
     --remote-access ec2SshKey=my-key-pair
 ```
+
+t3.medium is outside the free tier but for most deployment its minimum that can handle the simplest EKS setup.
+t2.nano (free tier) is not sufficient because had only 1GB RAM. docker and kubernetes agents itself required about 600 Mb, if we host even the modest app it would exceed resources
+
+![Alt text](images/ec2-nano-limitation.png)
+
+AmazonEKSWorkerNodeRole - the role must have this permissions:
+- AmazonEKSWorkerNodePolicy
+- AmazonEC2ContainerRegistryReadOnly
+- AmazonEKS_CNI_Policy
+
+Key pairs - To create a one go into EC2 ->Dashboard -> Network & Security ->Key pairs. Then you may create pair of keys that enable access to machines via SSH
+```
+--remote-access ec2SshKey=my-key-pair
+```
+
+
+
+
+
