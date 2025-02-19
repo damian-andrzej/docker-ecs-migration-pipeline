@@ -283,6 +283,71 @@ Key pairs - To create a one go into EC2 ->Dashboard -> Network & Security ->Key 
 --remote-access ec2SshKey=my-key-pair
 ```
 
+## Step 4. Deploy the app to cluster.
+
+As you learn about ECR already, we are good to create a deployment and service file that run our app in EKS
+
+Deployment file
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app-deployment
+  labels:
+    app: flask-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+      - name: flask-app
+        image: <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest
+        ports:
+        - containerPort: 8080
+```
+replicas is a number of instances of our app that run in one moment on cluster
+In place of 'image' - use your app link hosted on ECR
+containerPort is the port used by docker itself, even if your app use different port(for example 5000) inside EKS it will be represented by 8080
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-app-service
+spec:
+  selector:
+    app: flask-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
+```
+
+selector map service with deployment so it cant be randomly named!!
+targetPort is the port for outside communication
+
+to run the app use this one:
+```
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+```
+to check the status
+```
+kubectl get deployments
+kubectl get svc
+```
+
+## Step 5. Terraform script 
+
+to be continued...
+
 
 
 
