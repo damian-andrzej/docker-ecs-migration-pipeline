@@ -190,6 +190,15 @@ For lab purpose its the most flexible option but other hand you learn a lot abou
 
 There are some AWS requirements for VPC, Subnets and Security groups. To avoid duplication i will forward you to official article [this link](https://docs.aws.amazon.com/eks/latest/userguide/network-reqs.html)
 
+In few words : we need subnets with at least 8 IP adresses, rules that enable specific  application traffic to communicate outside the world( if required).
+All popular setups described in link above.
+Here is the VPC config we will provision
+
+![Alt text](images/VPC.png)
+
+Route table 
+![Alt text](images/rtable.png)
+
 SHORT DESCRIPTION OF OUR CONFIG - VPC SG etc PLUS GRAFIKA 
 
 Powershell
