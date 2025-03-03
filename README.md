@@ -36,7 +36,7 @@ aws ecr create-repository --repository-name my-app-repo
 
 ## Pipeline way to create and update this repository 
 
-Its crucial to plan whole flow of project, it will trigger script each time files change. If we edit a file or add new feature,
+Its crucial to plan whole flow of project, it will trigger script each time files has changed. If we edit a file or add new feature,
 pipeline will propage new image to repo then restart the application to make update
 ```
 name: CI/CD Pipeline for ECS Deployment
