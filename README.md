@@ -346,7 +346,90 @@ kubectl get svc
 
 ## Step 5. Terraform script 
 
-to be continued...
+Here is a terraform script that contains all the settings we provided manually at the beggining.
+
+```hcl
+provider "aws" {
+  region = "us-east-1"
+}
+
+# VPC and Subnets
+resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
+}
+
+resource "aws_subnet" "subnet1" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "us-east-1a"
+}
+
+resource "aws_subnet" "subnet2" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.2.0/24"
+  availability_zone = "us-east-1b"
+}
+
+# Security Group
+resource "aws_security_group" "eks_sg" {
+  vpc_id = aws_vpc.main.id
+  
+ingress {
+    from_port   = 5000
+    to_port     = 5000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+
+
+  
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# EKS Cluster
+resource "aws_eks_cluster" "clusterdamiana" {
+  name     = "clusterdamiana"
+  role_arn = "arn:aws:iam::992382459406:role/AmazonEKSAutoClusterRole"
+  version  = "1.32"
+
+  vpc_config {
+    subnet_ids         = ["subnet-094119997fd2df175", "subnet-0b8be373a77fbaad5"]
+    security_group_ids = ["sg-00a3c3b55bfc737a1"]
+  }
+}
+
+# IAM Role for Nodes
+resource "aws_iam_role" "eks_node_role" {
+  name = "AmazonEKSWorkerNodeRole"
+  arn  = "arn:aws:iam::992382459406:role/AmazonEKSWorkerNodeRole"
+}
+
+# EKS Node Group
+resource "aws_eks_node_group" "my_nodegroup" {
+  cluster_name    = aws_eks_cluster.clusterdamiana.name
+  node_group_name = "my-nodegroup"
+  node_role_arn   = aws_iam_role.eks_node_role.arn
+  subnet_ids      = ["subnet-094119997fd2df175", "subnet-0b8be373a77fbaad5"]
+
+  scaling_config {
+    desired_size = 2
+    max_size     = 3
+    min_size     = 1
+  }
+
+  instance_types = ["t3.medium"]
+  ami_type       = "AL2_x86_64"
+  disk_size      = 20
+
+  remote_access {
+    ec2_ssh_key = "my-key-pair"
+  }
+}
+```
 
 
 
