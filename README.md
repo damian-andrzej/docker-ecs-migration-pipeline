@@ -431,7 +431,7 @@ resource "aws_eks_node_group" "my_nodegroup" {
 }
 ```
 
-*If we need automation or do it in Infrastructure as a code way, above script will provision cluster manually os afterwards we must execute all the commands from previous(Step 4) step because the script doesn't configure the apps or any yaml config.*
+**If we need automation or do it in Infrastructure as a code way, above script will provision cluster manually but afterwards we must execute all the commands from previous(Step 4) step because the script doesn't configure the apps or any yaml config.**
 
 
 
