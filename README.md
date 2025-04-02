@@ -1,6 +1,6 @@
 # Moving App to Amazon ECS via CI/CD Pipeline
 
-This guide will walk you through the process of migrating your local app to **Amazon ECS** using a **CI/CD pipeline**. The steps include creating an **ECR repository**, authenticating via AWS CLI, uploading a Docker image to **Amazon ECR**, and setting up a pipeline to automate deployments to ECS.
+This guide will walk you through the process of migrating your local app to **Amazon ECS** using a **CI/CD pipeline**. The steps includes creating an **ECR repository**, authenticating via AWS CLI, uploading a Docker image to **Amazon ECR**, and setting up a pipeline to automate deployments to ECS.
 
 ---
 
